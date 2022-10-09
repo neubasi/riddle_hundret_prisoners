@@ -1,9 +1,10 @@
 const numberOfGames = 1000;
+const numberofPriosners = 100;
+const numberOfAttempt = 50
 let numberOfGamesPlayed = 0;
 let numberOfLooses = 0;
 let numberOfWins = 0;
-let averageMaxLoopSize = 0;
-let averageNumberOfLoops = 0;
+let controlLoop = 0;
 
 for (let n = 1; n <= numberOfGames; n++) {
 
@@ -14,14 +15,15 @@ for (let n = 1; n <= numberOfGames; n++) {
     let longestLoop: Array<number> = [];
 
     function generateBoxes(): void {
-        for (let index = 1; index <= 100; index++) {
-            let random = randomIntFromInterval(1, 100);
+        for (let index = 1; index <= numberofPriosners; index++) {
+            let random = randomIntFromInterval(1, numberofPriosners);
             boxes.set(index, random)
         }
+        console.log(boxes)
     }
 
     function randomIntFromInterval(min: number, max: number): number | undefined {
-        while (randomNumbers.length <= 100) {
+        while (randomNumbers.length <= numberofPriosners) {
             let result = Math.floor(Math.random() * (max - min + 1) + min);
             if (!randomNumbers.includes(result)) {
                 randomNumbers.push(result);
@@ -31,20 +33,28 @@ for (let n = 1; n <= numberOfGames; n++) {
     }
 
     function recursivelookIntoBox(genesisBox: number, boxNumber: number): void {
-        let numberInBox = boxes.get(boxNumber);
-        randomNumbers = randomNumbers.filter(e => e != numberInBox);
+        let numberInBox = boxes.get(boxNumber); //9
+        randomNumbers = randomNumbers.filter(e => e != boxNumber); // []
         chain.push(numberInBox);
         if ((boxNumber != numberInBox) && numberInBox != genesisBox) {
             boxNumber = numberInBox;
             recursivelookIntoBox(genesisBox, boxNumber);
         } else {
-            if (randomNumbers.length > 0 || chain.length == 100) {
+            if (countLengthinAllLoops(loops) < numberofPriosners) {
                 loops.push(chain);
                 chain = [];
                 genesisBox = randomNumbers[0];
                 recursivelookIntoBox(genesisBox, genesisBox)
             }
         }
+    }
+
+    function countLengthinAllLoops(loops: Array<Array<number>>): number {
+        let result = 0;
+        loops.forEach(element => {
+            result = result +element.length
+        });
+        return result;
     }
 
     function getLongestLoop(loops: Array<Array<number>>) {
@@ -60,15 +70,22 @@ for (let n = 1; n <= numberOfGames; n++) {
     }
 
     generateBoxes();
-    let random = Math.floor(Math.random() * (100 - 1 + 1) + 1)
+    let random = Math.floor(Math.random() * (numberofPriosners - 1 + 1) + 1);
     recursivelookIntoBox(random, random)
     console.log(loops, loops.length)
     getLongestLoop(loops)
     console.log("longestLoop, longestLoop.length", longestLoop, longestLoop.length)
 
     numberOfGamesPlayed = numberOfGamesPlayed + 1;
-    longestLoop.length <= 50 ? numberOfWins++ :numberOfLooses++;
+    longestLoop.length <= numberOfAttempt ? numberOfWins++ :numberOfLooses++;
 
+    // Kontrollfunktion
+    let controlLength = countLengthinAllLoops(loops);
+    console.log("Control length has to be ", numberofPriosners, "and is ", controlLength)
+    if(controlLength > numberofPriosners) {
+        console.log("Kontrollfunktion")
+        process.exit(1)
+    }
 }
 
 console.log("-------------------------------");
@@ -76,5 +93,8 @@ console.log("-------------------------------");
 console.log("Number Of Games: ", numberOfGamesPlayed)
 console.log("Number Of Looses: ", numberOfLooses)
 console.log("Number Of Wins: ", numberOfWins)
+console.log("Number Of Priosners: ", numberofPriosners)
+console.log("Number Of Attempts: ", numberOfAttempt)
 console.log("-------------------------------");
 console.log("Win Percentage %", numberOfWins / numberOfGamesPlayed * 100);
+
