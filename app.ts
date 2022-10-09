@@ -69,6 +69,10 @@ for (let n = 1; n <= numberOfGames; n++) {
         longestLoop = loops[indexLoop];
     }
 
+    function checkIfDuplicateExists(arr: Array<number>) {
+        return new Set(arr).size !== arr.length
+    }
+
     generateBoxes();
     let random = Math.floor(Math.random() * (numberofPriosners - 1 + 1) + 1);
     recursivelookIntoBox(random, random)
@@ -81,9 +85,15 @@ for (let n = 1; n <= numberOfGames; n++) {
 
     // Kontrollfunktion
     let controlLength = countLengthinAllLoops(loops);
-    console.log("Control length has to be ", numberofPriosners, "and is ", controlLength)
-    if(controlLength > numberofPriosners) {
-        console.log("Kontrollfunktion")
+    let flapArray = loops.flatMap(num => num);  
+
+    // Checke Länge
+    if(controlLength != numberofPriosners) {
+        console.log("Kontrollfunktion Length")
+        process.exit(1)
+    } // Checke Duplikate
+    if(checkIfDuplicateExists(flapArray)) {
+        console.log("Kontrollfunktion checkIfDuplicateExists")
         process.exit(1)
     }
 }
